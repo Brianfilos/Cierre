@@ -196,77 +196,89 @@ if df2 is not None:  # Verifica que df2 haya sido cargado correctamente
             # Mostrar el DataFrame agrupado
             st.write("Suma de presupuesto definitivo en ejecución de egresos:")
             st.dataframe(df2_agrupado2)
+
+
+
+
         except Exception as e:
             st.error(f"Error al agrupar los datos: {e}")
     else:
         st.warning("Las columnas 'FUEN FINA.' o 'PTTO DEFI.' no existen en el archivo cargado.")
 else:
     st.warning("No se ha cargado el archivo CSV (Ejecución Presupuestal Egresos).")
-    
-# Asegurémonos de que las columnas a comparar sean del mismo tipo
-df_agrupado2["Parte_1"] = df_agrupado2["Parte_1"].astype(str)
-df2_agrupado2["FUEN FINA."] = df2_agrupado2["FUEN FINA."].astype(str)
 
-# Realizamos el merge entre ambos DataFrames por la columna de fuente de financiación
-df_comparado = pd.merge(df_agrupado2, df2_agrupado2, left_on="Parte_1", right_on="FUEN FINA.", how="inner")
+# Verificar si los DataFrames necesarios están creados
+if 'df_agrupado2' in locals() and 'df2_agrupado2' in locals():
+    # Asegurémonos de que las columnas a comparar sean del mismo tipo
+    df_agrupado2["Parte_1"] = df_agrupado2["Parte_1"].astype(str)
+    df2_agrupado2["FUEN FINA."] = df2_agrupado2["FUEN FINA."].astype(str)
 
-# Renombrar las columnas
-df_comparado.rename(columns={
-    "Parte_1": "FUENTE DE FINANCIACION",
-    "Parte_2": "NOMBRE DE LA FUENTE",
-    "PRESUPUESTO DEFINITIVO Agrupado": "PRESUPUESTO EN INGRESOS",
-    "PTTO DEFI.": "PRESUPUESTO EN GASTOS"
-}, inplace=True)
+    # Realizamos el merge entre ambos DataFrames por la columna de fuente de financiación
+    df_comparado = pd.merge(df_agrupado2, df2_agrupado2, left_on="Parte_1", right_on="FUEN FINA.", how="inner")
 
-# Convertimos las columnas numéricas a tipo flotante para hacer la comparación
-df_comparado["PRESUPUESTO EN INGRESOS"] = df_comparado["PRESUPUESTO EN INGRESOS"].replace({r'\$': '', r'\.': '', r',': '.'}, regex=True).astype(float)
-df_comparado["PRESUPUESTO EN GASTOS"] = df_comparado["PRESUPUESTO EN GASTOS"].replace({r'\$': '', r'\.': '', r',': '.'}, regex=True).astype(float)
+    # Renombrar las columnas
+    df_comparado.rename(columns={
+        "Parte_1": "FUENTE DE FINANCIACION",
+        "Parte_2": "NOMBRE DE LA FUENTE",
+        "PRESUPUESTO DEFINITIVO Agrupado": "PRESUPUESTO EN INGRESOS",
+        "PTTO DEFI.": "PRESUPUESTO EN GASTOS"
+    }, inplace=True)
 
-# Calculamos la diferencia entre ambos valores
-df_comparado["Diferencia"] = df_comparado["PRESUPUESTO EN INGRESOS"] - df_comparado["PRESUPUESTO EN GASTOS"]
+    # Convertimos las columnas numéricas a tipo flotante para hacer la comparación
+    df_comparado["PRESUPUESTO EN INGRESOS"] = df_comparado["PRESUPUESTO EN INGRESOS"].replace({r'\$': '', r'\.': '', r',': '.'}, regex=True).astype(float)
+    df_comparado["PRESUPUESTO EN GASTOS"] = df_comparado["PRESUPUESTO EN GASTOS"].replace({r'\$': '', r'\.': '', r',': '.'}, regex=True).astype(float)
 
-# Convertimos los resultados a formato de pesos colombianos
-df_comparado["PRESUPUESTO EN INGRESOS"] = df_comparado["PRESUPUESTO EN INGRESOS"].apply(
-    lambda x: f"${x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-)
-df_comparado["PRESUPUESTO EN GASTOS"] = df_comparado["PRESUPUESTO EN GASTOS"].apply(
-    lambda x: f"${x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-)
-df_comparado["Diferencia"] = df_comparado["Diferencia"].apply(
-    lambda x: f"${x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-)
+    # Calculamos la diferencia entre ambos valores
+    df_comparado["Diferencia"] = df_comparado["PRESUPUESTO EN INGRESOS"] - df_comparado["PRESUPUESTO EN GASTOS"]
 
-# Eliminar la columna 'FUEN FINA.'
-df_comparado = df_comparado.drop(columns=["FUEN FINA."])
+    # Convertimos los resultados a formato de pesos colombianos
+    df_comparado["PRESUPUESTO EN INGRESOS"] = df_comparado["PRESUPUESTO EN INGRESOS"].apply(
+        lambda x: f"${x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+    df_comparado["PRESUPUESTO EN GASTOS"] = df_comparado["PRESUPUESTO EN GASTOS"].apply(
+        lambda x: f"${x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+    df_comparado["Diferencia"] = df_comparado["Diferencia"].apply(
+        lambda x: f"${x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
 
-# Mostrar el DataFrame con las diferencias
-st.write("Comparación entre el presupuesto en ingresos y el presupuesto en gastos:")
-st.dataframe(df_comparado)
+    # Eliminar la columna 'FUEN FINA.'
+    df_comparado = df_comparado.drop(columns=["FUEN FINA."])
 
-# Asegurémonos de que las columnas 'Total Recaudo Agrupado' y 'PAGOS' sean numéricas
-df_agrupado["Total Recaudo Agrupado"] = df_agrupado["Total Recaudo Agrupado"].replace({r'\$': '', r'\.': '', r',': '.'}, regex=True).astype(float)
-df2_agrupado["PAGOS"] = df2_agrupado["PAGOS"].replace({r'\$': '', r'\.': '', r',': '.'}, regex=True).astype(float)
+    # Mostrar el DataFrame con las diferencias
+    st.write("Comparación entre el presupuesto en ingresos y el presupuesto en gastos:")
+    st.dataframe(df_comparado)
+else:
+    st.error("Error: Los DataFrames 'df_agrupado2' y 'df2_agrupado2' no están creados o definidos.")
 
-# Realizamos el merge entre df_agrupado y df2_agrupado por la columna de fuente de financiación
-df_comparado_recaudo_pagos = pd.merge(df_agrupado, df2_agrupado, left_on="Parte_1", right_on="FUEN FINA.", how="inner")
+# Verificar si los DataFrames necesarios están creados para la segunda comparación
+if 'df_agrupado' in locals() and 'df2_agrupado' in locals():
+    # Asegurémonos de que las columnas 'Total Recaudo Agrupado' y 'PAGOS' sean numéricas
+    df_agrupado["Total Recaudo Agrupado"] = df_agrupado["Total Recaudo Agrupado"].replace({r'\$': '', r'\.': '', r',': '.'}, regex=True).astype(float)
+    df2_agrupado["PAGOS"] = df2_agrupado["PAGOS"].replace({r'\$': '', r'\.': '', r',': '.'}, regex=True).astype(float)
 
-# Calcular la diferencia entre 'Total Recaudo Agrupado' y 'PAGOS'
-df_comparado_recaudo_pagos["Recaudo - Pagos (ECB)"] = df_comparado_recaudo_pagos["Total Recaudo Agrupado"] - df_comparado_recaudo_pagos["PAGOS"]
+    # Realizamos el merge entre df_agrupado y df2_agrupado por la columna de fuente de financiación
+    df_comparado_recaudo_pagos = pd.merge(df_agrupado, df2_agrupado, left_on="Parte_1", right_on="FUEN FINA.", how="inner")
 
-# Convertir los resultados a formato de pesos colombianos
-df_comparado_recaudo_pagos["Total Recaudo Agrupado"] = df_comparado_recaudo_pagos["Total Recaudo Agrupado"].apply(
-    lambda x: f"${x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-)
-df_comparado_recaudo_pagos["PAGOS"] = df_comparado_recaudo_pagos["PAGOS"].apply(
-    lambda x: f"${x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-)
-df_comparado_recaudo_pagos["Recaudo - Pagos (ECB)"] = df_comparado_recaudo_pagos["Recaudo - Pagos (ECB)"].apply(
-    lambda x: f"${x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-)
+    # Calcular la diferencia entre 'Total Recaudo Agrupado' y 'PAGOS'
+    df_comparado_recaudo_pagos["Recaudo - Pagos (ECB)"] = df_comparado_recaudo_pagos["Total Recaudo Agrupado"] - df_comparado_recaudo_pagos["PAGOS"]
 
-# Eliminar la columna 'FUEN FINA.'
-df_comparado_recaudo_pagos = df_comparado_recaudo_pagos.drop(columns=["FUEN FINA."])
+    # Convertir los resultados a formato de pesos colombianos
+    df_comparado_recaudo_pagos["Total Recaudo Agrupado"] = df_comparado_recaudo_pagos["Total Recaudo Agrupado"].apply(
+        lambda x: f"${x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+    df_comparado_recaudo_pagos["PAGOS"] = df_comparado_recaudo_pagos["PAGOS"].apply(
+        lambda x: f"${x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+    df_comparado_recaudo_pagos["Recaudo - Pagos (ECB)"] = df_comparado_recaudo_pagos["Recaudo - Pagos (ECB)"].apply(
+        lambda x: f"${x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
 
-# Mostrar el DataFrame con la diferencia (Recaudo - Pagos (ECB))
-st.write("Diferencia entre Recaudo y Pagos por fuente de financiación:")
-st.dataframe(df_comparado_recaudo_pagos)
+    # Eliminar la columna 'FUEN FINA.'
+    df_comparado_recaudo_pagos = df_comparado_recaudo_pagos.drop(columns=["FUEN FINA."])
+
+    # Mostrar el DataFrame con la diferencia (Recaudo - Pagos (ECB))
+    st.write("Diferencia entre Recaudo y Pagos por fuente de financiación:")
+    st.dataframe(df_comparado_recaudo_pagos)
+else:
+    st.error("Error: Los DataFrames 'df_agrupado' y 'df2_agrupado' no están creados o definidos.")
