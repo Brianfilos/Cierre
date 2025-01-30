@@ -18,6 +18,18 @@ def cargar_csv(label, sep_char=";"):
             st.error(f"No se pudo leer el archivo {label}: {e}")
     return None
 
+# Función para cargar y mostrar un archivo CSV
+def cargar_csv2(label, sep_char=";"):
+    file = st.file_uploader(label, type=["csv"], key=label)
+    if file is not None:
+        try:
+            # Leer el archivo CSV con delimitador especificado
+            df = pd.read_csv(file, encoding="latin1", sep=sep_char, skiprows=4)
+            return df
+        except Exception as e:
+            st.error(f"No se pudo leer el archivo {label}: {e}")
+    return None
+
 def cargar_excel(label):
     file = st.file_uploader(label, type=["xlsx"], key=label)
     if file is not None:
@@ -50,7 +62,7 @@ archivos = [
     {
         "titulo": "Archivo CSV (EJECUCION CONSOLIDADA DE INGRESOS Y GASTOS):",
         "color": "orange",
-        "funcion_carga": cargar_csv,
+        "funcion_carga": cargar_csv2,
         "parametro": "Cargar archivo CSV (EJECUCION CONSOLIDADA DE INGRESOS Y GASTOS)",
         "nombre_df": "df_consolidado_i_e",
         "sep_char": ","
