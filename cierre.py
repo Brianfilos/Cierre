@@ -12,7 +12,7 @@ def cargar_csv(label, sep_char=";"):
     if file is not None:
         try:
             # Leer el archivo CSV con delimitador especificado
-            df = pd.read_csv(file, encoding="latin1", sep=sep_char)
+            df = pd.read_csv(file, encoding="latin1", sep=sep_char, skiprows=5)
             return df
         except Exception as e:
             st.error(f"No se pudo leer el archivo {label}: {e}")
