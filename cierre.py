@@ -449,7 +449,7 @@ if globals().get("df_comparado_recaudo_pagos") is not None:
     
     
     # Aseguramos que los valores de 'RUBRO' sean cadenas y aplicamos la función
-if globals().get("df_egreso_rubro") is not None:
+ if globals().get("df_egreso_rubro") is not None:
     df_egreso_rubro = globals().get("df_egreso_rubro")
     df_egreso_rubro[["FUENTE", "CLASIFICACION DEL GASTO"]] = df_egreso_rubro["RUBRO"].astype(str).apply(lambda x: pd.Series(extraer_fuente_y_clasificacion(x)))
 
