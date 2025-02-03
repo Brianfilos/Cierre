@@ -449,9 +449,9 @@ if globals().get("df_comparado_recaudo_pagos") is not None:
     
     
     # Aseguramos que los valores de 'RUBRO' sean cadenas y aplicamos la función
-    if globals().get("df_egreso_rubro") is not None:
-        df_egreso_rubro = globals().get("df_egreso_rubro")
-        df_egreso_rubro[["FUENTE", "CLASIFICACION DEL GASTO"]] = df_egreso_rubro["RUBRO"].astype(str).apply(lambda x: pd.Series(extraer_fuente_y_clasificacion(x)))
+if globals().get("df_egreso_rubro") is not None:
+    df_egreso_rubro = globals().get("df_egreso_rubro")
+    df_egreso_rubro[["FUENTE", "CLASIFICACION DEL GASTO"]] = df_egreso_rubro["RUBRO"].astype(str).apply(lambda x: pd.Series(extraer_fuente_y_clasificacion(x)))
 
     # Reemplazamos los valores 'None' con un valor vacío o por defecto si es necesario
     df_egreso_rubro["FUENTE"].fillna("", inplace=True)
@@ -521,27 +521,31 @@ if globals().get("df_comparado_recaudo_pagos") is not None:
     df_comparado_recaudo_pagos_copia = df_comparado_recaudo_pagos.copy()
 
 # Función para convertir los valores a formato numérico correcto
-    def convertir_a_numero(valor):
-        if isinstance(valor, str):
-            valor = valor.replace("$", "").replace(".", "").replace(",", "")
-            valor = valor[:-2] + "." + valor[-2:]
-        return float(valor)
+def convertir_a_numero(valor):
+    if isinstance(valor, str):
+        valor = valor.replace("$", "").replace(".", "").replace(",", "")
+        valor = valor[:-2] + "." + valor[-2:]
+    return float(valor)
 
- # Convertir las columnas 'TOTAL PAGOS EN CXP', 'Total Egresos', 'PAGOS' y 'Recaudo - Pagos (ECB)' a formato numérico
-df_comparado_recaudo_pagos_copia["TOTAL PAGOS EN CXP"] = df_comparado_recaudo_pagos_copia["TOTAL PAGOS EN CXP"].apply(convertir_a_numero)
-df_comparado_recaudo_pagos_copia["Total Egresos"] = df_comparado_recaudo_pagos_copia["Total Egresos"].apply(convertir_a_numero)
-df_comparado_recaudo_pagos_copia["PAGOS"] = df_comparado_recaudo_pagos_copia["PAGOS"].apply(convertir_a_numero)
-df_comparado_recaudo_pagos_copia["Recaudo - Pagos (ECB)"] = df_comparado_recaudo_pagos_copia["Recaudo - Pagos (ECB)"].apply(convertir_a_numero)
+# Verificar si el DataFrame df_comparado_recaudo_pagos_copia está definido
+if 'df_comparado_recaudo_pagos_copia' in locals():
+    # Convertir las columnas 'TOTAL PAGOS EN CXP', 'Total Egresos', 'PAGOS' y 'Recaudo - Pagos (ECB)' a formato numérico
+    df_comparado_recaudo_pagos_copia["TOTAL PAGOS EN CXP"] = df_comparado_recaudo_pagos_copia["TOTAL PAGOS EN CXP"].apply(convertir_a_numero)
+    df_comparado_recaudo_pagos_copia["Total Egresos"] = df_comparado_recaudo_pagos_copia["Total Egresos"].apply(convertir_a_numero)
+    df_comparado_recaudo_pagos_copia["PAGOS"] = df_comparado_recaudo_pagos_copia["PAGOS"].apply(convertir_a_numero)
+    df_comparado_recaudo_pagos_copia["Recaudo - Pagos (ECB)"] = df_comparado_recaudo_pagos_copia["Recaudo - Pagos (ECB)"].apply(convertir_a_numero)
 
     # Calcular 'SALDO CXP'
-df_comparado_recaudo_pagos_copia["SALDO CXP"] = df_comparado_recaudo_pagos_copia["TOTAL PAGOS EN CXP"] - df_comparado_recaudo_pagos_copia["PAGOS"]
+    df_comparado_recaudo_pagos_copia["SALDO CXP"] = df_comparado_recaudo_pagos_copia["TOTAL PAGOS EN CXP"] - df_comparado_recaudo_pagos_copia["PAGOS"]
 
     # Calcular 'Recaudo - Pagos - SALDO CXP (ECB)'
-df_comparado_recaudo_pagos_copia["Recaudo - Pagos - SALDO CXP (ECB)"] = df_comparado_recaudo_pagos_copia["Recaudo - Pagos (ECB)"] - df_comparado_recaudo_pagos_copia["SALDO CXP"]
+    df_comparado_recaudo_pagos_copia["Recaudo - Pagos - SALDO CXP (ECB)"] = df_comparado_recaudo_pagos_copia["Recaudo - Pagos (ECB)"] - df_comparado_recaudo_pagos_copia["SALDO CXP"]
 
     # Mostrar el DataFrame copiado con el nuevo cálculo
-#st.header("MATRIZ POR FUENTE DE FINANCIACION CON SALDO CXP:", divider="green")
-#st.dataframe(df_comparado_recaudo_pagos_copia)
+    # st.header("MATRIZ POR FUENTE DE FINANCIACION CON SALDO CXP:", divider="green")
+    # st.dataframe(df_comparado_recaudo_pagos_copia)
+else:
+    print("El DataFrame 'df_comparado_recaudo_pagos_copia' no está definido.")
 
 def procesar_excel():
     # Obtener el DataFrame cargado
