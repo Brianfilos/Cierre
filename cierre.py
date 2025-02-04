@@ -614,9 +614,9 @@ def procesar_excel():
 
 # Procesar el archivo Excel de Boletin de caja
 df_combinado_bancos = procesar_excel()
-#if df_combinado_bancos is not None:
-    #st.write("Vista previa de df_combinado_bancos:")
-    #st.dataframe(df_combinado_bancos)
+if df_combinado_bancos is not None:
+    st.write("Vista previa de df_combinado_bancos:")
+    st.dataframe(df_combinado_bancos)
 
 def cruzar_conciliaciones():
     # Obtener los DataFrames cargados
