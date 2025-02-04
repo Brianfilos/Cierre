@@ -614,9 +614,9 @@ def procesar_excel():
 
 # Procesar el archivo Excel de Boletin de caja
 df_combinado_bancos = procesar_excel()
-if df_combinado_bancos is not None:
-    st.write("Vista previa de df_combinado_bancos:")
-    st.dataframe(df_combinado_bancos)
+#if df_combinado_bancos is not None:
+    #st.write("Vista previa de df_combinado_bancos:")
+    #st.dataframe(df_combinado_bancos)
 
 def cruzar_conciliaciones():
     # Obtener los DataFrames cargados
@@ -653,9 +653,9 @@ def cruzar_conciliaciones():
 
 # Procesar el cruce de conciliaciones
 df_conciliaciones_cruzado = cruzar_conciliaciones()
-#f df_conciliaciones_cruzado is not None:
-    #st.write("Vista previa de df_conciliaciones_cruzado:")
-    #st.dataframe(df_conciliaciones_cruzado)
+if df_conciliaciones_cruzado is not None:
+    st.write("Vista previa de df_conciliaciones_cruzado:")
+    st.dataframe(df_conciliaciones_cruzado)
 
 def sumar_saldo_por_fuente():
     # Obtener el DataFrame cruzado
